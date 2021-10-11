@@ -1,0 +1,65 @@
+{
+	"info": {
+		"_postman_id": "ee4952bb-7069-4396-8495-6077e8de5df9",
+		"name": "Vetris Admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.globals.set(\"base_url\", \"localhost:9090\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "suresh91540",
+						"password": "rgukt123"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "something",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": "localhost:8888/v1/users/signon"
+			},
+			"response": []
+		},
+		{
+			"name": "JWTdecode",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "AUTHORIZATION",
+						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdXJlc2g5MTU0MCIsImlkIjoiMGFjN2IzNjctMTM0OC00NWM0LWFiZjEtMGY3NDQ5YTVkYjIyIiwiZXhwIjoxNjMzNjkyODM3LCJpYXQiOjE2MzM2NzQ4Mzd9.CjYMcKdGg-R7-u-niw3uQ1NO9O5MmY0nUb2a-99_j1iJyOo12poT_kap6GQQI30PCK0o_HCxHZfavDt2dmgHZA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": "localhost:8888/v1/users/decode"
+			},
+			"response": []
+		}
+	]
+}
