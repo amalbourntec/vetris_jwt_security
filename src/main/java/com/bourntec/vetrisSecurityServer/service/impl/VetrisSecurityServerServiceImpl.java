@@ -53,7 +53,7 @@ public class VetrisSecurityServerServiceImpl implements VetrisSecurittyServerSer
 		auth=auth.replace("Basic ", "");
 		byte[] baseDecode=Base64.getDecoder().decode(auth);
 		String[] userCred = new String(baseDecode).split(":");
-		Users resultUser = vetrisSecurityServerRepository.findloginId(userCred[0]);
+		Users resultUser = vetrisSecurityServerRepository.findByLoginId(userCred[0]);
 			if(Objects.nonNull(resultUser)) {
 				if(resultUser.getPassword().equals(encodePassword(userCred[1]))) {
 					Map<String, Object> claims = new HashMap<>();
