@@ -1,4 +1,6 @@
-package com.bourntec.vetrisSecurityServer.model;
+package com.vetris.security.model;
+
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,13 +25,14 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "users")
-@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id=?")
-@Where(clause = "deleted=false")
-public class Users extends AuditEntityModel{
+@SQLDelete(sql = "UPDATE users SET is_active = 'N' WHERE id=?")
+@Where(clause = "is_active='Y'")
+public class User{
 	
 	@Id
 	@Column(name = "id",length=200)
 	private String id;
+	
 	
 	@Column(name = "code",length = 40,nullable=true)
 	private String code;
@@ -64,7 +67,7 @@ public class Users extends AuditEntityModel{
 	@Column(name = "is_visible",length = 1,nullable=true)
 	private String isVisible;
 
-	@Column(name = "login_id",length = 50,nullable=true)
+	@Column(name = "login_id",length = 50,nullable=true, unique = true)
 	private String loginId;
 	
 	@Column(name = "notification_pref",length = 1,nullable=true)
@@ -79,58 +82,15 @@ public class Users extends AuditEntityModel{
 	@Column(name = "theme_pref",length = 10,nullable=true)
 	private String themePref;
 	
-	@Column(name="deleted")
-	private boolean deleted = Boolean.FALSE;
-
-	//Default constructor
-	public Users() {
-		
-	}
-
-	/**
-	 * @param id
-	 * @param code
-	 * @param name
-	 * @param password
-	 * @param emailId
-	 * @param contactNo
-	 * @param userRoleId
-	 * @param firstLogin
-	 * @param pacsUserId
-	 * @param pacsPassword
-	 * @param isActive
-	 * @param isVisible
-	 * @param loginId
-	 * @param notificationPref
-	 * @param allowManualSubmission
-	 * @param allowDashboardView
-	 * @param themePref
-	 * @param deleted
-	 */
-	public Users(String id, String code, String name, String password, String emailId, String contactNo,
-			Integer userRoleId, String firstLogin, String pacsUserId, String pacsPassword, String isActive,
-			String isVisible, String loginId, String notificationPref, String allowManualSubmission,
-			String allowDashboardView, String themePref, boolean deleted) {
-		super();
-		this.id = id;
-		this.code = code;
-		this.name = name;
-		this.password = password;
-		this.emailId = emailId;
-		this.contactNo = contactNo;
-		this.userRoleId = userRoleId;
-		this.firstLogin = firstLogin;
-		this.pacsUserId = pacsUserId;
-		this.pacsPassword = pacsPassword;
-		this.isActive = isActive;
-		this.isVisible = isVisible;
-		this.loginId = loginId;
-		this.notificationPref = notificationPref;
-		this.allowManualSubmission = allowManualSubmission;
-		this.allowDashboardView = allowDashboardView;
-		this.themePref = themePref;
-		this.deleted = deleted;
-	}
+	@Column(name="created_by", length=200,nullable = false)
+	private String createdBy;
 	
+	@Column(name="date_created",nullable = false)
+	private Date dateCreated;
 	
+	@Column(name="update_by", length=200,nullable = true)
+	private String updateBy;
+	
+	@Column(name="date_updated",nullable = true)
+	private Date dateUpdated;
 }
