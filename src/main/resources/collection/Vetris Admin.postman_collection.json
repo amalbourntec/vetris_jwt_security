@@ -22,8 +22,8 @@
 				"auth": {
 					"type": "basic",
 					"basic": {
-						"username": "suresh91540",
-						"password": "rgukt123"
+						"username": "suresh",
+						"password": "test123"
 					}
 				},
 				"method": "POST",
@@ -35,7 +35,7 @@
 						"disabled": true
 					}
 				],
-				"url": "localhost:8888/v1/users/signon"
+				"url": "localhost:8888/vetris-security/v1/users/signon"
 			},
 			"response": []
 		},
@@ -49,7 +49,7 @@
 				"header": [
 					{
 						"key": "AUTHORIZATION",
-						"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdXJlc2g5MTU0MCIsImlkIjoiMGFjN2IzNjctMTM0OC00NWM0LWFiZjEtMGY3NDQ5YTVkYjIyIiwiZXhwIjoxNjMzNjkyODM3LCJpYXQiOjE2MzM2NzQ4Mzd9.CjYMcKdGg-R7-u-niw3uQ1NO9O5MmY0nUb2a-99_j1iJyOo12poT_kap6GQQI30PCK0o_HCxHZfavDt2dmgHZA",
+						"value": "{{AUTHORIZATION}}",
 						"type": "text"
 					}
 				],
@@ -57,7 +57,7 @@
 					"mode": "raw",
 					"raw": ""
 				},
-				"url": "localhost:8888/v1/users/decode"
+				"url": "http://localhost:8888/vetris-security/v1/users/decode"
 			},
 			"response": []
 		}
