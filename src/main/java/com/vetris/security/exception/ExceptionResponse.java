@@ -3,6 +3,8 @@
  */
 package com.vetris.security.exception;
 
+import java.util.Date;
+
 import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
@@ -15,8 +17,10 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ExceptionResponse {
-	private String responseMessage;
-	
+	private Date timestamp;
+	private int status;
 	private HttpStatus httpStatus;
+	private String message;
+	private String path;
 
 }

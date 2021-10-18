@@ -1,5 +1,6 @@
 package com.vetris.security.enums;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

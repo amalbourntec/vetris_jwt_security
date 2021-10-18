@@ -14,6 +14,6 @@ import lombok.Setter;
 public class TokenExpiredException extends Exception{
 
 	private static final long serialVersionUID = 6942751272542673284L;
-	
+
 	private String message;
 }

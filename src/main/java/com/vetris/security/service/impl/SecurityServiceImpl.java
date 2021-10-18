@@ -84,7 +84,7 @@ public class SecurityServiceImpl implements SecurittyService {
 				throw new UnauthorizedException(ExceptionCodes.UNAUTHORIZED_USER.getMessage());
 			}
 		} else {
-			throw new InvalidUserException(ExceptionCodes.INVALID_USER.getMessage());
+			throw new InvalidUserException(ExceptionCodes.USER_NOT_FOUND.getMessage());
 		}
 
 		return ResponseEntity.ok().headers(responseHeaders).body(resultDto);
