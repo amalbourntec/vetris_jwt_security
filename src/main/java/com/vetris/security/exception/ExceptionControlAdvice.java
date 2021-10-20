@@ -48,10 +48,10 @@ public class ExceptionControlAdvice {
 	public ResponseEntity<?> handleInvalidUserException(InvalidUserException ex,HttpServletRequest request){
 		ExceptionResponse response = new ExceptionResponse();
 		
-		response.setStatus(HttpStatus.BAD_REQUEST.value());
+		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setMessage(ex.getMessage());
 		response.setTimestamp(new Date());
-		response.setHttpStatus(HttpStatus.BAD_REQUEST);
+		response.setHttpStatus(HttpStatus.UNAUTHORIZED);
 		response.setPath(request.getRequestURI());
 		
 		return new ResponseEntity<>(response, response.getHttpStatus());
@@ -61,10 +61,10 @@ public class ExceptionControlAdvice {
 	public ResponseEntity<?> handleTokenExpiredException(TokenExpiredException ex,HttpServletRequest request){
 		ExceptionResponse response = new ExceptionResponse();
 		
-		response.setStatus(HttpStatus.BAD_REQUEST.value());
+		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setMessage(ex.getMessage());
 		response.setTimestamp(new Date());
-		response.setHttpStatus(HttpStatus.BAD_REQUEST);
+		response.setHttpStatus(HttpStatus.UNAUTHORIZED);
 		response.setPath(request.getRequestURI());
 		
 		return new ResponseEntity<>(response, response.getHttpStatus());
