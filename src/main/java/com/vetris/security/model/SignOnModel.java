@@ -14,6 +14,7 @@ import lombok.Setter;
 public class SignOnModel {
 	private String loginId;
 	private String userId;
+	private String userRole;
 	private Date tokenIssuedDate;
 	private Date tokenExpiredDate;
 

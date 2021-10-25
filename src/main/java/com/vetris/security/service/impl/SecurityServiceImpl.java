@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,9 @@ import com.vetris.security.exception.TokenExpiredException;
 import com.vetris.security.exception.UnauthorizedException;
 import com.vetris.security.model.SignOnModel;
 import com.vetris.security.model.User;
+import com.vetris.security.model.UserRoles;
 import com.vetris.security.repository.SecurityRepository;
+import com.vetris.security.repository.UserRolesRepostitory;
 import com.vetris.security.service.SecurittyService;
 
 import io.jsonwebtoken.Claims;
@@ -39,6 +42,7 @@ public class SecurityServiceImpl implements SecurittyService {
 	
 	private static final String AUTHORIZATION = "AUTHORIZATION";
 	private static final String USERUUID = "id";
+	private static final String USERROLES = "roles";
 
 	@Value("${jwt.secret}")
 	private String secret;
@@ -48,6 +52,9 @@ public class SecurityServiceImpl implements SecurittyService {
 
 	@Autowired
 	SecurityRepository securityRepository;
+	
+	@Autowired
+	UserRolesRepostitory userRolesRepostitory;
 
 	@Autowired
 	ObjectMapper objectMapper;
@@ -73,6 +80,10 @@ public class SecurityServiceImpl implements SecurittyService {
 			if (resultUser.getPassword().equals(encodePassword(userCred[1]))) {
 				Map<String, Object> claims = new HashMap<>();
 				claims.put(USERUUID, resultUser.getId());
+				Optional<UserRoles> userRoles= userRolesRepostitory.findById(resultUser.getUserRoleId());
+				if(userRoles.isPresent()) {
+					claims.put(USERROLES,"ROLE_"+userRoles.get().getCode());
+				}
 				String jwtToken = doGenerateToken(claims, userCred[0]);
 				responseHeaders.set(AUTHORIZATION, jwtToken);
 
@@ -117,6 +128,7 @@ public class SecurityServiceImpl implements SecurittyService {
 		SignOnModel result = new SignOnModel();
 		result.setLoginId(claims.getSubject());
 		result.setUserId(claims.get(USERUUID).toString());
+		result.setUserRole(claims.get(USERROLES).toString());
 		result.setTokenIssuedDate(claims.getIssuedAt());
 		result.setTokenExpiredDate(claims.getExpiration());
 
