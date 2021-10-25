@@ -127,8 +127,12 @@ public class SecurityServiceImpl implements SecurittyService {
 
 		SignOnModel result = new SignOnModel();
 		result.setLoginId(claims.getSubject());
-		result.setUserId(claims.get(USERUUID).toString());
-		result.setUserRole(claims.get(USERROLES).toString());
+		if(Objects.nonNull(claims.get(USERUUID))) {
+			result.setUserId(claims.get(USERUUID).toString());
+		}
+		if(Objects.nonNull(claims.get(USERROLES))) {
+			result.setUserRole(claims.get(USERROLES).toString());
+		}
 		result.setTokenIssuedDate(claims.getIssuedAt());
 		result.setTokenExpiredDate(claims.getExpiration());
 
