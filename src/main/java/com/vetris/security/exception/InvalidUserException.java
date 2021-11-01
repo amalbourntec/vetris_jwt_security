@@ -16,5 +16,5 @@ public class InvalidUserException extends Exception{
 
 	private static final long serialVersionUID = -402504043461198027L;
 	
-	private String message;
+	private final String message;
 }

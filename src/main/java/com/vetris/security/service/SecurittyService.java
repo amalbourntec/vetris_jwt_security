@@ -2,6 +2,7 @@ package com.vetris.security.service;
 
 import org.springframework.http.ResponseEntity;
 
+import com.vetris.security.dto.CommonResponseDTO;
 import com.vetris.security.exception.InvalidUserException;
 import com.vetris.security.exception.TokenExpiredException;
 import com.vetris.security.exception.UnauthorizedException;
@@ -22,7 +23,7 @@ public interface SecurittyService {
 	 * @throws InvalidUserException
 	 * @throws TokenExpiredException
 	 */
-	public ResponseEntity<?> signon(String auth) throws UnauthorizedException, InvalidUserException, TokenExpiredException;
+	public ResponseEntity<CommonResponseDTO> signon(String auth) throws UnauthorizedException, InvalidUserException, TokenExpiredException;
 	
 	/**
 	 *Method to decode the given JWT token using secret

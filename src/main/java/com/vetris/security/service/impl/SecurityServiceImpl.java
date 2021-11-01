@@ -68,7 +68,7 @@ public class SecurityServiceImpl implements SecurittyService {
 	 * @throws TokenExpiredException
 	 */
 	@Override
-	public ResponseEntity<?> signon(String auth)
+	public ResponseEntity<CommonResponseDTO> signon(String auth)
 			throws UnauthorizedException, InvalidUserException, TokenExpiredException {
 		CommonResponseDTO resultDto = new CommonResponseDTO();
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -111,7 +111,6 @@ public class SecurityServiceImpl implements SecurittyService {
 		Claims claims = null;
 		try {
 			claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-			;
 		} catch (Exception e) {
 			throw new TokenExpiredException(ExceptionCodes.TOKEN_EXPIRED.getMessage());
 		}

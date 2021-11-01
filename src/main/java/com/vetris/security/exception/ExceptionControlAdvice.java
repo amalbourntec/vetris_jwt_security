@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionControlAdvice {
 	
 	@ExceptionHandler(Throwable.class)
-	public ResponseEntity<?> handleThrowable(Throwable ex,HttpServletRequest request){
+	public ResponseEntity<ExceptionResponse> handleThrowable(Throwable ex,HttpServletRequest request){
 		ExceptionResponse response = new ExceptionResponse();
 		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		response.setMessage(ex.getMessage());
@@ -32,7 +32,7 @@ public class ExceptionControlAdvice {
 	}
 
 	@ExceptionHandler(UnauthorizedException.class)
-	public ResponseEntity<?> handleUnauthorizedException(UnauthorizedException ex,HttpServletRequest request){
+	public ResponseEntity<ExceptionResponse> handleUnauthorizedException(UnauthorizedException ex,HttpServletRequest request){
 		ExceptionResponse response = new ExceptionResponse();
 		
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -45,7 +45,7 @@ public class ExceptionControlAdvice {
 	}
 	
 	@ExceptionHandler(InvalidUserException.class)
-	public ResponseEntity<?> handleInvalidUserException(InvalidUserException ex,HttpServletRequest request){
+	public ResponseEntity<ExceptionResponse> handleInvalidUserException(InvalidUserException ex,HttpServletRequest request){
 		ExceptionResponse response = new ExceptionResponse();
 		
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -58,7 +58,7 @@ public class ExceptionControlAdvice {
 	}
 	
 	@ExceptionHandler(TokenExpiredException.class)
-	public ResponseEntity<?> handleTokenExpiredException(TokenExpiredException ex,HttpServletRequest request){
+	public ResponseEntity<ExceptionResponse> handleTokenExpiredException(TokenExpiredException ex,HttpServletRequest request){
 		ExceptionResponse response = new ExceptionResponse();
 		
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());

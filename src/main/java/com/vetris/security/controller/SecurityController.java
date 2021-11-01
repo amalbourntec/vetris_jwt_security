@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetris.security.dto.CommonResponseDTO;
 import com.vetris.security.exception.InvalidUserException;
 import com.vetris.security.exception.TokenExpiredException;
 import com.vetris.security.exception.UnauthorizedException;
@@ -27,7 +28,7 @@ import io.jsonwebtoken.Claims;
 public class SecurityController {
 	
 	@Autowired
-	SecurittyService securittyService;
+	private SecurittyService securittyService;
 	
 	
 	/**
@@ -39,7 +40,7 @@ public class SecurityController {
 	 * @throws TokenExpiredException
 	 */
 	@PostMapping("/signon")
-	public ResponseEntity<?> signon(@RequestHeader("Authorization") String auth) throws UnauthorizedException,InvalidUserException, TokenExpiredException {
+	public ResponseEntity<CommonResponseDTO> signon(@RequestHeader("Authorization") String auth) throws UnauthorizedException,InvalidUserException, TokenExpiredException {
 		return securittyService.signon(auth);
 		
 	}
