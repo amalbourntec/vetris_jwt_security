@@ -86,6 +86,7 @@ public class SecurityServiceImpl implements SecurittyService {
 				}
 				String jwtToken = doGenerateToken(claims, userCred[0]);
 				responseHeaders.set(AUTHORIZATION, jwtToken);
+				responseHeaders.set("Access-Control-Expose-Headers", "AUTHORIZATION");
 
 				resultDto.setStatus(StatusType.SUCCESS.getMessage());
 				resultDto.setPayload(persistDataToSignInModel(decodeToken(jwtToken)));
