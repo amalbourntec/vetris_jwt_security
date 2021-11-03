@@ -28,6 +28,16 @@ public interface SecurittyService {
 	/**
 	 *Method to decode the given JWT token using secret
 	 * @throws TokenExpiredException 
+	 * @throws UnauthorizedException 
 	 */
-	public Claims decodeToken(String token) throws TokenExpiredException;
+	public Claims decodeToken(String token) throws TokenExpiredException, UnauthorizedException;
+
+	/**
+	 * Method to MFA login using JWT token and MFA token
+	 * @param auth
+	 * @return
+	 * @throws UnauthorizedException
+	 * @throws TokenExpiredException 
+	 */
+	public ResponseEntity<CommonResponseDTO> mfasignon(String token, String otp) throws TokenExpiredException, UnauthorizedException;
 }

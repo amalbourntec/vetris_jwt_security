@@ -13,7 +13,9 @@ import lombok.Getter;
 public enum ExceptionCodes {
 	UNAUTHORIZED_USER("Unauthorized User."),
 	USER_NOT_FOUND("Unable to fatch the User."),
-	INVALID_USER("Invalid user"),
-	TOKEN_EXPIRED("Token expired.");
+	INVALID_OTP("Invalid OTP"),
+	TOKEN_EXPIRED("Token expired."),
+	MFA_NOT_VALIDATED("Unable to validate MFA token");
+	
 	private String message;	
 }

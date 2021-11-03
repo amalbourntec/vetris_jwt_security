@@ -25,7 +25,7 @@ import lombok.ToString;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @ToString
-public abstract class AuditEntityModel {
+public class AuditEntityModel {
 	
 	@Column(name="created_by", length=200,nullable = false, updatable=false)
 	private String createdBy;

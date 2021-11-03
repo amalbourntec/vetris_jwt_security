@@ -22,12 +22,12 @@ import com.vetris.security.enums.StatusType;
 import com.vetris.security.exception.InvalidUserException;
 import com.vetris.security.exception.TokenExpiredException;
 import com.vetris.security.exception.UnauthorizedException;
-import com.vetris.security.model.SignOnModel;
 import com.vetris.security.model.User;
 import com.vetris.security.model.UserRoles;
 import com.vetris.security.repository.SecurityRepository;
 import com.vetris.security.repository.UserRolesRepostitory;
 import com.vetris.security.service.SecurittyService;
+import com.vetris.security.utils.MfaUtil;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -39,10 +39,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
  */
 @Service
 public class SecurityServiceImpl implements SecurittyService {
-	
+
 	private static final String AUTHORIZATION = "AUTHORIZATION";
 	private static final String USERUUID = "id";
 	private static final String USERROLES = "roles";
+	private static final String MFAENABLE = "mfaEnabled";
+	private static final String MFAVALIDATED = "mfaValidated";
+	private static final String CLAIMSUBJECT = "sub";
 
 	@Value("${jwt.secret}")
 	private String secret;
@@ -52,7 +55,7 @@ public class SecurityServiceImpl implements SecurittyService {
 
 	@Autowired
 	SecurityRepository securityRepository;
-	
+
 	@Autowired
 	UserRolesRepostitory userRolesRepostitory;
 
@@ -76,29 +79,29 @@ public class SecurityServiceImpl implements SecurittyService {
 		byte[] baseDecode = Base64.getDecoder().decode(auth);
 		String[] userCred = new String(baseDecode).split(":");
 		User resultUser = securityRepository.findByLoginId(userCred[0]);
-		if (Objects.nonNull(resultUser)) {
-			if (resultUser.getPassword().equals(encodePassword(userCred[1]))) {
-				Map<String, Object> claims = new HashMap<>();
-				claims.put(USERUUID, resultUser.getId());
-				Optional<UserRoles> userRoles= userRolesRepostitory.findById(resultUser.getUserRoleId());
-				if(userRoles.isPresent()) {
-					claims.put(USERROLES,"ROLE_"+userRoles.get().getCode());
-				}
-				String jwtToken = doGenerateToken(claims, userCred[0]);
-				responseHeaders.set(AUTHORIZATION, jwtToken);
-				responseHeaders.set("Access-Control-Expose-Headers", "AUTHORIZATION");
-
-				resultDto.setStatus(StatusType.SUCCESS.getMessage());
-				resultDto.setPayload(persistDataToSignInModel(decodeToken(jwtToken)));
-				resultDto.setMessage("User logged in successfully");
-
-			} else {
-				throw new UnauthorizedException(ExceptionCodes.UNAUTHORIZED_USER.getMessage());
-			}
-		} else {
+		if (!Objects.nonNull(resultUser)) {
 			throw new InvalidUserException(ExceptionCodes.USER_NOT_FOUND.getMessage());
 		}
+		if (!resultUser.getPassword().equals(encodePassword(userCred[1]))) {
+			throw new UnauthorizedException(ExceptionCodes.UNAUTHORIZED_USER.getMessage());
+		}
+		Map<String, Object> claims = new HashMap<>();
+		claims.put(USERUUID, resultUser.getId());
+		Optional<UserRoles> userRoles = userRolesRepostitory.findById(resultUser.getUserRoleId());
+		if (userRoles.isPresent()) {
+			claims.put(USERROLES, "ROLE_" + userRoles.get().getCode());
+		}
+		if(Objects.nonNull(resultUser.getEnableMfa()) && resultUser.getEnableMfa().equals("Y")) {
+			claims.put(MFAENABLE,resultUser.getEnableMfa());
+			claims.put(MFAVALIDATED, "false");
+		}
+		String jwtToken = doGenerateToken(claims, userCred[0]);
+		responseHeaders.set(AUTHORIZATION, jwtToken);
+		responseHeaders.set("Access-Control-Expose-Headers", AUTHORIZATION);
 
+		resultDto.setStatus(StatusType.SUCCESS.getMessage());
+		resultDto.setPayload(claims);
+		resultDto.setMessage("User logged in successfully");
 		return ResponseEntity.ok().headers(responseHeaders).body(resultDto);
 	}
 
@@ -106,37 +109,56 @@ public class SecurityServiceImpl implements SecurittyService {
 	 * Method to decode the given JWT token using secret
 	 * 
 	 * @throws TokenExpiredException
+	 * @throws UnauthorizedException 
 	 */
 	@Override
-	public Claims decodeToken(String token) throws TokenExpiredException {
+	public Claims decodeToken(String token) throws TokenExpiredException, UnauthorizedException {
 		Claims claims = null;
 		try {
 			claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 		} catch (Exception e) {
 			throw new TokenExpiredException(ExceptionCodes.TOKEN_EXPIRED.getMessage());
 		}
+		
 		return claims;
 	}
 
 	/**
-	 * method is to convert claims to SignInModel
-	 * @param claims
-	 * @return 
+	 * Method to validate MFA token the given JWT token using secret
+	 * 
+	 * @throws TokenExpiredException
+	 * @throws JsonProcessingException 
+	 * @throws JsonMappingException 
+	 * @throws UnauthorizedException 
 	 */
-	private SignOnModel persistDataToSignInModel(Claims claims) {
-
-		SignOnModel result = new SignOnModel();
-		result.setLoginId(claims.getSubject());
-		if(Objects.nonNull(claims.get(USERUUID))) {
-			result.setUserId(claims.get(USERUUID).toString());
+	@Override
+	public ResponseEntity<CommonResponseDTO> mfasignon(String token, String otp) throws TokenExpiredException, UnauthorizedException {
+		CommonResponseDTO resultDto = new CommonResponseDTO();
+		HttpHeaders responseHeaders = new HttpHeaders();
+		
+		Claims claims= decodeToken(token);
+				
+		if(!Objects.nonNull(claims.get(MFAENABLE)) && !claims.get(MFAENABLE).equals("Y") && !claims.get(MFAVALIDATED).equals("false")) {
+			throw new UnauthorizedException(ExceptionCodes.MFA_NOT_VALIDATED.getMessage());
 		}
-		if(Objects.nonNull(claims.get(USERROLES))) {
-			result.setUserRole(claims.get(USERROLES).toString());
+		
+		User resultUser = securityRepository.findByLoginId(claims.get(CLAIMSUBJECT).toString());
+		
+		if (!validateOtp(resultUser.getSecretKey(), otp)) {
+			throw new UnauthorizedException(ExceptionCodes.INVALID_OTP.getMessage());
 		}
-		result.setTokenIssuedDate(claims.getIssuedAt());
-		result.setTokenExpiredDate(claims.getExpiration());
+		//Update Claims data
+		claims.put(MFAENABLE,resultUser.getEnableMfa());
+		claims.put(MFAVALIDATED, "true");
+		
+		String jwtToken = doGenerateToken(claims, claims.get(CLAIMSUBJECT).toString());
+		responseHeaders.set(AUTHORIZATION, jwtToken);
+		responseHeaders.set("Access-Control-Expose-Headers", AUTHORIZATION);
 
-		return result;
+		resultDto.setStatus(StatusType.SUCCESS.getMessage());
+		resultDto.setPayload(claims);
+		resultDto.setMessage("User logged in successfully");
+		return ResponseEntity.ok().headers(responseHeaders).body(resultDto);
 	}
 
 	/**
@@ -176,4 +198,14 @@ public class SecurityServiceImpl implements SecurittyService {
 		}
 		return encryptedpassword;
 	}
+
+	private boolean validateOtp(String mfaSecret, String otp) {
+		String mfaCode = MfaUtil.getTOTPCode(mfaSecret);
+		boolean result = false;
+		if(mfaCode.equalsIgnoreCase(otp))
+			result = true;
+		
+		return result;
+	}
+
 }

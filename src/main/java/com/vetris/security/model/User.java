@@ -74,6 +74,12 @@ public class User extends AuditEntityModel{
 	@Column(name = "allow_dashboard_view",length = 1,nullable=true)
 	private String allowDashboardView;
 	
+	@Column(name = "enable_mfa",length = 1,nullable=true)
+	private String enableMfa;
+	
+	@Column(name = "secret_key",length = 200,nullable=true)
+	private String secretKey;
+	
 	@Column(name = "theme_pref",length = 10,nullable=true)
 	private String themePref;
 	
