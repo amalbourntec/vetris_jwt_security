@@ -12,7 +12,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.globals.set(\"base_url\", \"localhost:9090\");"
+							"pm.environment.set(\"AUTHORIZATION\", postman.getResponseHeader(\"AUTHORIZATION\"));"
 						],
 						"type": "text/javascript"
 					}
@@ -22,7 +22,7 @@
 				"auth": {
 					"type": "basic",
 					"basic": {
-						"username": "suresh",
+						"username": "support",
 						"password": "test123"
 					}
 				},
@@ -58,6 +58,41 @@
 					"raw": ""
 				},
 				"url": "http://localhost:8888/vetris-security/v1/users/decode"
+			},
+			"response": []
+		},
+		{
+			"name": "Mfa token login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"AUTHORIZATION\", postman.getResponseHeader(\"AUTHORIZATION\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "AUTHORIZATION",
+						"value": "{{AUTHORIZATION}}",
+						"type": "text"
+					},
+					{
+						"key": "otp",
+						"value": "442567",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": "http://localhost:8888/vetris-security/v1/users/mfasignon"
 			},
 			"response": []
 		}
